@@ -11,7 +11,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api", compileRoutes);
 // MongoDB connection
-mongoose.connect("mongodb://localhost:27017/compilestorm",)
+mongoose.connect("mongodb://localhost:27017/CompileStorm",)
 .then(() => {
   console.log("Connected to MongoDB");
   // Start server after DB connection
