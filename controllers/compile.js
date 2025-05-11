@@ -1,6 +1,8 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Signup controller
@@ -61,3 +63,17 @@ exports.signin = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+exports.userDetails = async (req, res)=>{
+    try{
+        res.status(200).json({
+            userData : req.user
+        })
+    }
+    catch(e){
+        console.error("Error fetching user data!");
+        res.status(500).json({
+            message : 'Internal Server Error'
+        })
+    }
+}

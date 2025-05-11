@@ -1,12 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+
+require('dotenv').config();
+
 const compileRoutes = require("./routes/compile");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-require('dotenv').config();
 
 // Middleware
 app.use(express.json());
