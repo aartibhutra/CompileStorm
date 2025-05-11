@@ -1,32 +1,26 @@
-const user = {
-    username : "RaunakAga12",
-    email : "raunakaga12@gmail.com"
-}
-
-import { useState } from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 export default function Header(){
-    const [selected, setSelected] = useState("");
+    const [user, setUser] = useState({username : "Guest"});
 
-    const handleChange = (e) =>{
-        setSelected(e.target.value);
-    }
+    useEffect(()=>{
+        async function fetch(){
+            await axios.get("http://localhost:3000/api/userDetails", {withCredentials : true})
+            .then((res)=>{
+                setUser(res.data.userData)
+            }).catch((e)=>console.log(e));
+        }
+        fetch();
+    },[])
 
     return <div>
         {/* Logo */}
         <h1>CompileStorm</h1>
-
-        {/* Two buttons in center (Run, Language(dropbox)) */}
-        <div>
-            <button>Run</button>
-            <select id="language" value={selected} onChange = {handleChange}>
-                <option value = "">--Select--</option>
-                <option value = "java">Java</option>
-            </select>
-        </div>
         
         {/* Profile */}
         <div>
+            {/* on click will show signout button */}
             {user.username.charAt(0)}
         </div>
     </div>

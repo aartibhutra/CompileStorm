@@ -1,17 +1,20 @@
-import { ExampleEditor } from "./ExampleEditor";
+// import { useRecoilValue } from "recoil";
+import { MonEditor } from "./MonEditor";
+import { useState } from "react";
+// import { outputSt } from "../store/output";
+
 
 export default function Body(){
+    const [op , setOp] =  useState("...")
     return (<div>
         {/* Code Editor */}
-        <ExampleEditor/>
+        <MonEditor setOp={setOp}/>
 
         {/* Output and Input Screen */}
         <div>
-            {/* Input Screen */}
-
             {/* Output Screen */}
             <div>
-                Output
+                Output - {op}
             </div>
         </div>
     </div>)
