@@ -1,9 +1,14 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+// const { json } = require('express');
 const jwt = require('jsonwebtoken');
+const axios = require("axios")
 
-require('dotenv').config();
+// require('dotenv').config();
 const JWT_SECRET = process.env.JWT_SECRET;
+
+//utilities
+const map = require("./lang");
 
 // Signup controller
 exports.signup = async (req, res) => {
@@ -72,6 +77,39 @@ exports.userDetails = async (req, res)=>{
     }
     catch(e){
         console.error("Error fetching user data!");
+        res.status(500).json({
+            message : 'Internal Server Error'
+        })
+    }
+}
+
+exports.runCode = async (req, res)=>{
+    try{
+        const {lang, content, inputs} = req.body;
+        
+        if(!lang || !content){
+            return res.status(400).json({ message: 'Missing values!' });
+        }
+
+        const data = map.get(lang);
+        if(!data){
+            return res.status(400).json({ message: 'Invalid Language!' });
+        }
+
+        data.files[0].content = content;
+        data.stdin = inputs;
+
+        const response = await axios.post("https://emkc.org/api/v2/piston/execute", data);
+        
+        if(!response){
+            return res.status(400).json({ message: 'Error fetching response!' });
+        }
+
+        res.status(200).json(response.data);
+    }
+    catch(e){
+        // console.log(e);
+        console.error("Error running code!");
         res.status(500).json({
             message : 'Internal Server Error'
         })
