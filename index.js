@@ -2,8 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const compileRoutes = require("./routes/compile");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+require('dotenv').config();
 
 // Middleware
 app.use(express.json());
@@ -11,7 +14,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api", compileRoutes);
 // MongoDB connection
-mongoose.connect("mongodb://localhost:27017/CompileStorm",)
+mongoose.connect(process.env.DATABASE_URI)
 .then(() => {
   console.log("Connected to MongoDB");
   // Start server after DB connection
