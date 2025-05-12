@@ -36,6 +36,9 @@ export const MonEditor = (props) => {
     // selecting language 
     const [selected, setSelected] = useState("");
 
+    //code running
+    const [run, setRun] = useState(false)
+
     const handleChange = (e) =>{
         setSelected(e.target.value);
         setCode(map.get(e.target.value))
@@ -45,6 +48,7 @@ export const MonEditor = (props) => {
     }
 
     const executeCode = async ()=>{
+      setRun(true);
 
       if(props.user.username == "Guest000000000012"){
         notifyInfo("Please login to execute code");
@@ -59,9 +63,10 @@ export const MonEditor = (props) => {
         inputs : input
       }
 
-      const res = await axios.post("http://localhost:3000/api/runCode", body, {withCredentials : true})
-
-      props.setOp(res.data.run.output);
+      await axios.post("http://localhost:3000/api/runCode", body, {withCredentials : true}).then((res)=>{
+        setRun(false);
+        props.setOp(res.data.run.output);
+      })
     }
 
   return (
@@ -81,9 +86,15 @@ export const MonEditor = (props) => {
             <option value = "python">Python</option>
           </select>
 
-          <button onClick={executeCode} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
+          {/* <button onClick={executeCode} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
             Run
-          </button>
+          </button> */}
+          {!run ? <button onClick={executeCode} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
+            Run
+          </button> :
+          <button disabled className="px-4 py-2 border-1 border-indigo-500 text-white rounded-md transition">
+            Run
+          </button>}
         </div>
 
       <div className="rounded-lg overflow-hidden border border-zinc-700 shadow-inner">
