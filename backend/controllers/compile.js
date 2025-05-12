@@ -9,6 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 //utilities
 const map = require("./lang");
+const {signInSchema, signUpSchema} = require('../models/zodSchema');
 
 // Signup controller
 exports.signup = async (req, res) => {
@@ -17,11 +18,18 @@ exports.signup = async (req, res) => {
         return res.status(400).json({ message: 'Please provide username, email and password' });
     }
     try {
+        //zod validation
+        const validate = signUpSchema.safeParse({username, email, password});
+        if(!validate.success){
+            return res.status(400).json("Invalid Inputs!");
+        }
+
         // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'User with this email already exists' });
         }
+
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
         // Create new user
@@ -45,6 +53,14 @@ exports.signin = async (req, res) => {
         return res.status(400).json({ message: 'Please provide email and password' });
     }
     try {
+        //zod validation
+        const validate = signInSchema.safeParse({email, password});
+        if(!validate.success){
+            return res.status(400).json({
+                message : "Invalid Inputs!"
+            })
+        }
+
         // Find user by email
         const user = await User.findOne({ email });
         if (!user) {
@@ -71,8 +87,12 @@ exports.signin = async (req, res) => {
 
 exports.userDetails = async (req, res)=>{
     try{
+        const user = await User.findById(req.user.userId);
+        if(!user){
+            return res.status(400).json({message : "User not found!"})
+        }
         res.status(200).json({
-            userData : req.user
+            userData : user
         })
     }
     catch(e){
