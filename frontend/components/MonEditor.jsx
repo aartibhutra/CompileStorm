@@ -58,26 +58,46 @@ export const MonEditor = (props) => {
     }
 
   return (
-    <div>
-        <select id="language" value={selected} onChange = {handleChange}>
-            <option value = "">--Select--</option>
-            <option value = "java">Java</option>
-        </select>
+    <div className="w-full flex flex-col gap-4">
+        <div className="flex items-center gap-4">
+          <select
+            id="language"
+            value={selected}
+            onChange={handleChange}
+            className="bg-zinc-800 text-white border border-zinc-600 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="">--Select--</option>
+            <option value="java">Java</option>
+          </select>
 
-        <button onClick={executeCode}>Run</button>
+          <button
+            onClick={executeCode}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition"
+          >
+            Run
+          </button>
+        </div>
 
-      <MonacoEditor
-        language={selected} // Set the language to Java
-        theme="vs-dark"
-        value={map.get(selected)}
-        options={editorOptions}
-        height="500px" // or specify a pixel value like '500px'
-        onChange={(newCode) => setCode(newCode)}
-      />
+      <div className="rounded-lg overflow-hidden border border-zinc-700 shadow-inner">
+        <MonacoEditor
+          language={selected}
+          theme="vs-dark"
+          value={map.get(selected)}
+          options={editorOptions}
+          height="500px"
+          onChange={(newCode) => setCode(newCode)}
+        />
+      </div>
 
-      <div>
-        Input -
-        <textarea onChange={(e)=>setInput(e.target.value)}></textarea>
+      {/* Input box */}
+      <div className="mt-4">
+        <label className="block text-sm font-medium text-indigo-400 mb-1">Input</label>
+        <textarea
+          rows={4}
+          className="w-full bg-zinc-800 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Optional input for your program..."
+        />
       </div>
     </div>
   );
