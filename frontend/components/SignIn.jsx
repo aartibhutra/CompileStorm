@@ -43,7 +43,7 @@ export default function SignIn () {
                 <input type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)}></input>
 
                 <input type="password" placeholder="Password" onChange={(e)=>setPass(e.target.value)}></input>
-                {/* <a href="/forgotPassword" className="hover:text-[#d00000] underline place-self-start text-sm pb-4">Forgot Password?</a> */}
+                <a href="/forgotPassword" className="hover:text-[#d00000] underline place-self-start text-sm pb-4">Forgot Password?</a>
 
                 <button type="submit" onClick={(e) => handleSignIn(e)}>Sign In</button>
             </form>

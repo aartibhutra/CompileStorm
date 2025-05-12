@@ -10,6 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 //utilities
 const map = require("./lang");
 const {signInSchema, signUpSchema} = require('../models/zodSchema');
+const {sendEmail} = require('./emailService')
 
 // Signup controller
 exports.signup = async (req, res) => {
@@ -141,6 +142,91 @@ exports.runCode = async (req, res)=>{
         console.error("Error running code!");
         res.status(500).json({
             message : 'Internal Server Error'
+        })
+    }
+}
+
+const generateotp = ()=> Math.floor(Math.random()*1000000).toString() 
+
+//forgot password
+exports.forgotPassword = async (req,res)=>{
+    try{
+        const {email} =  req.body;
+        const userEmail = email.toLowerCase();
+
+        const user = await User.findOne({email : userEmail});
+        if(!user) return res.status(404).json({message : "User not found"})
+
+        const otp = generateotp();
+
+        user.otpToken = otp;
+        user.otpExpires = Date.now() + 10*60*1000; //expires in 10 minutes
+
+        await user.save();
+
+        await sendEmail(user.email, "Password reset OTP!", `Your OTP is : ${otp}`);
+
+        res.status(200).json({
+            message : "otp sent!"
+        })
+
+    }catch(e){
+        res.status(500).json({
+            error : e.message
+        })
+    }
+}
+
+exports.verifyOtp = async (req, res) => {
+    try{
+        const {otp, email} = req.body;
+        const userEmail = email.toLowerCase();
+
+        const user = await User.findOne({email : userEmail});
+        if(!user) return res.status(404).json({
+            message : "User not found"
+        })
+
+        if(Date.now() > user.otpExpires){
+            return res.status(400).json({
+                message : "OTP expired"
+            })
+        }
+
+        if(user.otpToken === otp.toString()){
+            return res.status(200).json({
+                message: "user verified!"
+            })
+        }
+
+        res.status(400).json({
+            message: "Invalid OTP"
+        })
+
+    } catch(e) {
+        res.status(500).json({
+            error : e.message
+        })
+    }
+}
+
+exports.resetPassword = async (req, res) => {
+    try{
+        const {email, password} = req.body;
+        const userEmail = email.toLowerCase();
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await User.findOne({email : userEmail});
+        if(!user) return res.status(404).json({
+            message : "User not found"
+        })
+        user.password = hashedPassword;
+        await user.save();
+        res.status(200).json({
+            message : "Password reset successfully"
+        })
+    } catch(e) {
+        res.status(500).json({
+            error : e.message
         })
     }
 }

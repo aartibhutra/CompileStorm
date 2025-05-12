@@ -15,6 +15,13 @@ const userSchema = new mongoose.Schema({
     password:{
         type: String,
         required: true,
+    },
+    //otp fields
+    otpToken : {
+        type : String, //hashed otp
+    },
+    otpExpires : {
+        type : Date //otp expire time
     }
 });
 module.exports = mongoose.model("user", userSchema);
