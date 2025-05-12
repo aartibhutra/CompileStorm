@@ -85,6 +85,16 @@ exports.signin = async (req, res) => {
     }
 };
 
+exports.signout = async (req, res) => {
+    try{
+        res.clearCookie("token").json({ message: "Logged out successfully" }); //remove the cookie named 'token'
+    }
+    catch(e){
+        console.error('Signout error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 exports.userDetails = async (req, res)=>{
     try{
         const user = await User.findById(req.user.userId);
