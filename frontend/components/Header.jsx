@@ -13,7 +13,7 @@ export default function Header(props){
 
     useEffect(()=>{
         async function fetch(){
-            await axios.get("http://localhost:3000/api/userDetails", {withCredentials : true})
+            await axios.get("https://compilestorm-backend.onrender.com//api/userDetails", {withCredentials : true})
             .then((res)=>{
                 setUser(res.data.userData)
             }).catch((e)=>console.log(e));
@@ -22,7 +22,7 @@ export default function Header(props){
     },[])
 
     const handleSignOut = async ()=>{
-        await axios.post("http://localhost:3000/api/signout").then(()=>{
+        await axios.post("https://compilestorm-backend.onrender.com//api/signout").then(()=>{
             console.log("signed out !");
             setShowDropDown(false);
             setUser({username : "Guest000000000012"});
