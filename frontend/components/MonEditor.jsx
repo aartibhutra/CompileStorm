@@ -59,15 +59,16 @@ export const MonEditor = (props) => {
 
   return (
     <div>
+        <div>
         <select id="language" value={selected} onChange = {handleChange}>
             <option value = "">--Select--</option>
             <option value = "java">Java</option>
+            <option value = "c">C</option>
+            <option value = "c++">C++</option>
+            <option value = "python">Python</option>
         </select>
 
-          <button
-            onClick={executeCode}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition"
-          >
+          <button onClick={executeCode} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
             Run
           </button>
         </div>
@@ -95,6 +96,6 @@ export const MonEditor = (props) => {
       </div>
     </div>
   );
-};
+}
 
 export default MonEditor;
