@@ -103,14 +103,14 @@ export const MonEditor = (props) => {
           theme="vs-dark"
           value={map.get(selected)}
           options={editorOptions}
-          height="500px"
+          height="100%"
           width={"100%"}
           onChange={(newCode) => setCode(newCode)}
         />
       </div>
 
       {/* Input box */}
-      <div className="mt-4 rounded-lg overflow-hidden border border-zinc-700 shadow-inner w-full max-w-full">
+      <div className="mt-4 rounded-lg overflow-hidden border border-zinc-700 shadow-inner w-full max-w-full p-2">
         <label className="block text-sm font-medium text-indigo-400 mb-1">Input</label>
         <textarea
           rows={3}
