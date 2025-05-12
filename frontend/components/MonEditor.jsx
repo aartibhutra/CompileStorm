@@ -70,7 +70,7 @@ export const MonEditor = (props) => {
     }
 
   return (
-    <div>
+    <div className="w-full h-screen px-4 py-4 overflow-auto">
       <div className="w-full flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <select
@@ -97,7 +97,7 @@ export const MonEditor = (props) => {
           </button>}
         </div>
 
-      <div className="rounded-lg overflow-hidden border border-zinc-700 shadow-inner">
+      <div className="rounded-lg overflow-hidden border border-zinc-700 shadow-inner w-full max-w-full h-[60vh]">
         <MonacoEditor
           language={selected}
           theme="vs-dark"
@@ -110,7 +110,7 @@ export const MonEditor = (props) => {
       </div>
 
       {/* Input box */}
-      <div className="mt-4 rounded-lg overflow-hidden border border-zinc-700 shadow-inner">
+      <div className="mt-4 rounded-lg overflow-hidden border border-zinc-700 shadow-inner w-full max-w-full">
         <label className="block text-sm font-medium text-indigo-400 mb-1">Input</label>
         <textarea
           rows={3}

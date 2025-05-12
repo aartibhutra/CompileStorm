@@ -36,15 +36,17 @@ export default function Header(props){
     }
 
     //  nav bar 
-    return <div className="bg-neutral-800 text-white pl-0 pr-6 py-2 flex items-start justify-between shadow-md">
+    return <div className="bg-neutral-800 text-white pl-0 pr-6 py-2 flex flex-col md:flex-col md:w-[12%] w-full h-auto md:h-screen shadow-md">
         {/* Logo */}
-        <h1 className="text-xl font-serif italic leading-tight tracking-tight text-white">
-            <span className="block text-indigo-400">Compile</span>
-            <span className="block text-white">Storm</span>
-        </h1>
+        <div className="text-center">
+            <h1 className="text-xl font-serif italic leading-tight tracking-tight text-white">
+                <span className="block text-indigo-400">Compile</span>
+                <span className="block text-white">Storm</span>
+            </h1>
+        </div>
         
         {/* Profile */}
-        <div className="absolute bottom-2 left-6 text-white">
+        <div className="mt-auto text-white relative md:absolute md:bottom-4 md:left-6">
             {/* on click will show signout button */}
             <div onClick={()=>setShowDropDown(!showDropDown)}
                 className="w-10 h-10 rounded-full bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center text-lg font-semibold cursor-pointer transition">{user.username.charAt(0)}</div>
