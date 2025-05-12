@@ -1,7 +1,7 @@
 import { useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
-import { notifySuccess, notifyError } from "./utility/toast";
+import { notifySuccess } from "./utility/toast";
 
 export default function SignIn () {
     const navigate = useNavigate();

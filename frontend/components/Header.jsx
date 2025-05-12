@@ -33,19 +33,20 @@ export default function Header(){
         })
     }
 
-    // nav bar 
-    return <div className="bg-neutral-800 text-white px-6 py-2 flex items-start justify-between shadow-md">
+    //  nav bar 
+    return <div className="bg-neutral-800 text-white pl-0 pr-6 py-2 flex items-start justify-between shadow-md">
         {/* Logo */}
-        <h1 className="text-2xl font-bold">
-            <span className="block">Compile</span>
-            <span className="block">Storm</span>
+        <h1 className="text-xl font-serif italic leading-tight tracking-tight text-white">
+            <span className="block text-indigo-400">Compile</span>
+            <span className="block text-white">Storm</span>
         </h1>
         
         {/* Profile */}
-        <div className="absolute bottom-2 left-6">
+        <div className="absolute bottom-2 left-6 text-white">
             {/* on click will show signout button */}
-            <div onClick={()=>setShowDropDown(true)}>{user.username.charAt(0)}</div>
-            {!showDropDown ? <></> : <div>
+            <div onClick={()=>setShowDropDown(!showDropDown)}
+                className="w-10 h-10 rounded-full bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center text-lg font-semibold cursor-pointer transition">{user.username.charAt(0)}</div>
+            {!showDropDown ? <></> : <div className="mt-2 bg-neutral-800 border border-neutral-600 rounded-md shadow-lg py-2 px-4">
                 {user.username == "Guest000000000012" ? <button onClick={()=>navigate("/signin")}>Sign In</button> : <button onClick={()=>handleSignOut()}>Sign Out</button>}
             </div>}
         </div>
