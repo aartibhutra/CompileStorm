@@ -6,7 +6,8 @@ const cors = require("cors");
 const app = express();
 app.use(
     cors({ // allow users to hit backend with the given origins
-      origin: "http://localhost:5173", // Frontend URL
+      // origin: "http://localhost:5173", // Frontend URL
+        origin : "https://compilestorm-frontend.netlify.app"
       credentials: true, // Allow cookies
     })
 );
