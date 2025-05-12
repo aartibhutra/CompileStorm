@@ -140,24 +140,27 @@ export default function ForgotPassword(){
                 <div className="text-xl pb-6 font-semibold text-center">Enter New Password</div>
 
                 <form onSubmit={handlePasswordReset}>
-                    <input 
-                        placeholder="new password" 
-                        value={pass} 
-                        onChange={(e)=> setPass(e.target.value)} 
-                        className="w-full bg-zinc-700 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        ></input>
-                    <input 
-                        placeholder="confirm new password" 
-                        value={confirmPass} 
-                        onChange={(e)=> setConfirmPass(e.target.value)} 
-                        className="w-full bg-zinc-700 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        ></input>
-                    <button 
-                        type="submit"
-                        className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-md py-2 transition" 
-                    >Reset Password</button>
-                </form>
+                   <div className="flex flex-col space-y-4">
+                        <input
+                            placeholder="New password"
+                            value={pass}
+                            onChange={(e) => setPass(e.target.value)}
+                            className="w-full bg-zinc-700 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <input
+                            placeholder="Confirm new password"
+                            value={confirmPass}
+                            onChange={(e) => setConfirmPass(e.target.value)}
+                            className="w-full bg-zinc-700 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
 
+                        <button 
+                            type="submit"
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-md py-2 transition" 
+                        >Reset Password</button>
+                    </div>
+                    <div className="pt-4 text-center">Remembered your password? <a href="/signin" className="hover:text-indigo-400 underline">Sign In</a></div>
+                </form>
             </div>
         }
     </div>
