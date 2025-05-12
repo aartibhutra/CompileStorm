@@ -58,19 +58,8 @@ export const MonEditor = (props) => {
     }
 
   return (
-<<<<<<< HEAD
     <div>
-        <div>
-        <select id="language" value={selected} onChange = {handleChange}>
-            <option value = "">--Select--</option>
-            <option value = "java">Java</option>
-            <option value = "c">C</option>
-            <option value = "c++">C++</option>
-            <option value = "python">Python</option>
-        </select>
-      </div>
-=======
-    <div className="w-full flex flex-col gap-4">
+      <div className="w-full flex flex-col gap-4">
         <div className="flex items-center gap-4">
           <select
             id="language"
@@ -78,10 +67,12 @@ export const MonEditor = (props) => {
             onChange={handleChange}
             className="bg-zinc-800 text-white border border-zinc-600 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="">--Select--</option>
-            <option value="java">Java</option>
+            <option value = "">--Select--</option>
+            <option value = "java">Java</option>
+            <option value = "c">C</option>
+            <option value = "c++">C++</option>
+            <option value = "python">Python</option>
           </select>
->>>>>>> 528f2b9ef576d49bea8a5bc56445abaf2fcaea2d
 
           <button onClick={executeCode} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
             Run
