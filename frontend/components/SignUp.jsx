@@ -37,21 +37,34 @@ export default function SignUp () {
         }
     }
 
-    return <div className="flex flex-row justify-center items-center h-screen w-screen gap-4">
-        <div className="basis-1/2 flex flex-col justify-center items-center">
-            <h2 className="text-2xl pb-10 font-semibold">Welcome to the Compile Storm!</h2>
-            <form>
-                <input type="username" placeholder="Username" value={username} onChange={(e)=>setUsername(e.target.value)}></input>
-                <input type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)}></input>
+    return <div className="flex flex-row justify-center items-center h-screen w-screen gap-4 bg-zinc-900 text-white">
+        <div className="flex justify-center items-center">
+            <div className="bg-zinc-800 p-8 rounded-xl shadow-lg w-full max-w-md">
+                <h2 className="text-2xl pb-10 font-semibold text-center text-indigo-400">Welcome to the Compile Storm!</h2>
+                <form className="flex flex-col gap-4">
+                    <input 
+                        type="username" placeholder="Username" value={username} onChange={(e)=>setUsername(e.target.value)}
+                        className="bg-zinc-700 text-white p-2 rounded-md outline-none"
+                    ></input>
+                    <input 
+                        type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)}
+                        className="bg-zinc-700 text-white p-2 rounded-md outline-none"
+                    ></input>
 
-                <input type="password" placeholder="Password" onChange={(e)=>setPass(e.target.value)}></input>
+                    <input 
+                        type="password" placeholder="Password" onChange={(e)=>setPass(e.target.value)}
+                        className="bg-zinc-700 text-white p-2 rounded-md outline-none"
+                    ></input>
                 {/* <a href="/forgotPassword" className="hover:text-[#d00000] underline place-self-start text-sm pb-4">Forgot Password?</a> */}
 
-                <button type="submit" onClick={(e)=>handleSignUp(e)}>Sign Up</button>
+                    <button 
+                        type="submit" onClick={(e)=>handleSignUp(e)}
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-md"
+                    >Sign Up</button>
             </form>
             
-            <div className="pt-4">Already have an account? <a href="/signin" className="hover:text-[#d00000] underline">Sign In!</a></div>
+            <div className="pt-4 text-center">Already have an account? <a href="/signin" className="hover:text-indigo-400 underline">Sign In!</a></div>
+            </div>
         </div>
-        <div className="basis-1/2 bg-[url(/images/backgroungimg.jpg)] h-screen"></div>
     </div>
 }
