@@ -42,7 +42,8 @@ export default function SignIn () {
                 <span className="text-indigo-500 font-mono">Compile</span>
                 <span className="text-white font-sans">Storm</span>
             </h1>
-            <h2 className="text-1xl pb-10 font-semibold text-center text-indigo-300">Welcome Back!</h2>
+            <br></br>
+            <h2 className="text-2xl pb-10 font-semibold text-center">Welcome Back!</h2>
             <form className="flex flex-col gap-4">
                 <input 
                     type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)}

@@ -45,7 +45,7 @@ export default function SignUp () {
 
         <div className="flex justify-center items-center">
             <div className="bg-zinc-800 p-8 rounded-xl shadow-lg w-full max-w-md">
-                <h2 className="text-2xl pb-10 font-semibold text-center text-indigo-400">Welcome to the Compile Storm!</h2>
+                <h2 className="text-2xl pb-10 font-semibold text-center text-indigo-500">Welcome to the Compile Storm!</h2>
                 <form className="flex flex-col gap-4">
                     <input 
                         type="username" placeholder="Username" value={username} onChange={(e)=>setUsername(e.target.value)}
