@@ -110,8 +110,10 @@ export default function ForgotPassword(){
             <div className="bg-zinc-800 p-8 rounded-lg shadow-lg w-[90%] sm:w-[400px] flex flex-col gap-6 items-center">
 
                 <div className="text-base font-medium font-sans text-center text-gray-300">
-                    Account's Email: <span className="font-normal text-sm text-white">{email}</span>
+                    <span className="block">Account's Email:</span>
+                    <span className="block text-sm text-white font-normal">{email}</span>
                 </div>
+
 
 
                 <Timer setTimer={setTimer} startTimer={startTimer}/>
