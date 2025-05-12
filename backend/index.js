@@ -4,13 +4,27 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 const app = express();
-app.use(
-    cors({ // allow users to hit backend with the given origins
-      // origin: "http://localhost:5173", // Frontend URL
-        origin : true,
-      credentials: true, // Allow cookies
-    })
-);
+// app.use(
+//     cors({ // allow users to hit backend with the given origins
+//       // origin: "http://localhost:5173", // Frontend URL
+//         origin : true,
+//       credentials: true, // Allow cookies
+//     })
+// );
+
+const allowedOrigins = ['http://localhost:5173', 'https://compilestorm-frontend.netlify.app'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Check if the origin is allowed, or if it's not provided (e.g., for non-browser clients like Postman)
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // Allow credentials (cookies, authentication headers, etc.)
+}));
 
 require('dotenv').config();
 
