@@ -81,43 +81,81 @@ export default function ForgotPassword(){
         }
     }
 
-    return <div className="flex flex-row justify-center items-center h-screen w-screen">
-        <h1 className="absolute top-6 text-4xl font-serif italic text-center">
+    return <div className="flex flex-row justify-center items-center h-screen w-screen bg-zinc-900 text-white relative">
+        <h1 className="absolute top-50 text-4xl font-serif italic text-center">
             <span className="text-indigo-500 font-mono">Compile</span>
             <span className="text-white font-sans">Storm</span>
         </h1>
-        {step == 1 ?
-            <div className="flex flex-col gap-4">
+            {step == 1 ?
+            <div className="bg-zinc-800 p-8 rounded-lg shadow-lg w-[90%] sm:w-[400px] flex flex-col gap-6 items-center">
                 
-                <div className="text-xl font-semibold">Enter your account's email address</div>
+                <div className="text-xl font-semibold text-center">Enter your account's email address</div>
 
-                <form onSubmit={handleEmailSubmit}>
-                    <input placeholder="Email" value={email} onChange={(e)=> setEmail(e.target.value)}></input>
-                    <button type="submit" >Send OTP</button>
+                <form onSubmit={handleEmailSubmit} className="w-full flex flex-col gap-4">
+                    <input 
+                        placeholder="Email" 
+                        value={email} 
+                        onChange={(e)=> setEmail(e.target.value)}
+                        className="w-full bg-zinc-700 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                    </input>
+                    <button 
+                        type="submit" 
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-md py-2 transition"
+                    >Send OTP
+                    </button>
                 </form>
 
             </div> : step == 2 ? 
-            <div className="flex flex-col justify-center items-center">
+            <div className="bg-zinc-800 p-8 rounded-lg shadow-lg w-[90%] sm:w-[400px] flex flex-col gap-6 items-center">
 
-                <div className="text-xl font-semibold pb-5">Account's Email : {email}</div>
+                <div className="text-xl font-semibold text-center">Account's Email : {email}</div>
 
                 <Timer setTimer={setTimer} startTimer={startTimer}/>
 
-                <form onSubmit={handleOtpVerification}>
-                    <input placeholder="OTP" value={otp} onChange={(e)=> setOtp(e.target.value)}></input>
+                <form 
+                    onSubmit={handleOtpVerification}
+                    className="w-full flex flex-col gap-4"
+                    >
+                    <input 
+                        placeholder="OTP" 
+                        value={otp} 
+                        onChange={(e)=> setOtp(e.target.value)}
+                        className="w-full bg-zinc-700 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        ></input>
 
-                    {!startTimer ? <button onClick={handleEmailSubmit}>Resend OTP</button> : <button type="submit" >Verify</button>}
+                    {!startTimer ? 
+                        <button 
+                            onClick={handleEmailSubmit}
+                            className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-md py-2 transition"
+                            >Resend OTP</button> : <button 
+                                type="submit" 
+                                className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-md py-2 transition"
+                                >Verify</button>}
                 </form>
 
             </div> : 
-            <div className="flex flex-col justify-center align-center">
+            <div className="bg-zinc-800 p-8 rounded-lg shadow-lg w-[90%] sm:w-[400px] flex flex-col gap-6 items-center">
                 
-                <div className="text-xl pb-6 font-semibold place-self-center">Enter New Password</div>
+                <div className="text-xl pb-6 font-semibold text-center">Enter New Password</div>
 
                 <form onSubmit={handlePasswordReset}>
-                    <input placeholder="new password" value={pass} onChange={(e)=> setPass(e.target.value)} ></input>
-                    <input placeholder="confirm new password" value={confirmPass} onChange={(e)=> setConfirmPass(e.target.value)} ></input>
-                    <button type="submit" >Reset Password</button>
+                    <input 
+                        placeholder="new password" 
+                        value={pass} 
+                        onChange={(e)=> setPass(e.target.value)} 
+                        className="w-full bg-zinc-700 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        ></input>
+                    <input 
+                        placeholder="confirm new password" 
+                        value={confirmPass} 
+                        onChange={(e)=> setConfirmPass(e.target.value)} 
+                        className="w-full bg-zinc-700 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        ></input>
+                    <button 
+                        type="submit"
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-md py-2 transition" 
+                    >Reset Password</button>
                 </form>
 
             </div>
