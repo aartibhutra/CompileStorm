@@ -38,6 +38,11 @@ export default function SignUp () {
     }
 
     return <div className="flex flex-row justify-center items-center h-screen w-screen gap-4 bg-zinc-900 text-white">
+        <h1 className="absolute top-6 left-6 text-2xl font-serif italic">
+            <span className="text-indigo-500 font-mono">Compile</span>
+            <span className="text-white font-sans">Storm</span>
+        </h1>
+
         <div className="flex justify-center items-center">
             <div className="bg-zinc-800 p-8 rounded-xl shadow-lg w-full max-w-md">
                 <h2 className="text-2xl pb-10 font-semibold text-center text-indigo-400">Welcome to the Compile Storm!</h2>

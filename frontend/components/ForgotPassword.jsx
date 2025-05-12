@@ -82,6 +82,10 @@ export default function ForgotPassword(){
     }
 
     return <div className="flex flex-row justify-center items-center h-screen w-screen">
+        <h1 className="absolute top-6 text-4xl font-serif italic text-center">
+            <span className="text-indigo-500 font-mono">Compile</span>
+            <span className="text-white font-sans">Storm</span>
+        </h1>
         {step == 1 ?
             <div className="flex flex-col gap-4">
                 
