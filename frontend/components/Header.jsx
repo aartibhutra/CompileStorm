@@ -14,12 +14,16 @@ export default function Header(){
         fetch();
     },[])
 
-    return <div>
+    // nav bar 
+    return <div className="bg-neutral-800 text-white px-6 py-2 flex items-start justify-between shadow-md">
         {/* Logo */}
-        <h1>CompileStorm</h1>
+        <h1 className="text-2xl font-bold">
+            <span className="block">Compile</span>
+            <span className="block">Storm</span>
+        </h1>
         
         {/* Profile */}
-        <div>
+        <div className="absolute bottom-2 left-6">
             {/* on click will show signout button */}
             {user.username.charAt(0)}
         </div>
