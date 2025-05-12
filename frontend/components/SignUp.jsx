@@ -20,7 +20,7 @@ export default function SignUp () {
                 "password": pass
             }
 
-            await axios.post("https://compilestorm-backend.onrender.com//api/signup", body, {withCredentials : true}) //"withCredentials" allows us to send or receive cookies
+            await axios.post("https://compilestorm-backend.onrender.com/api/signup", body, {withCredentials : true}) //"withCredentials" allows us to send or receive cookies
                 .then(()=>{
                     // notifySuccess("Signed In Successfully!");
                     console.log("User Logged In!");
