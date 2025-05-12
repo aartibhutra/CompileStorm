@@ -82,7 +82,7 @@ export default function ForgotPassword(){
     }
 
     return <div className="flex flex-row justify-center items-center h-screen w-screen bg-zinc-900 text-white relative">
-        <h1 className="absolute top-50 text-4xl font-serif italic text-center">
+        <h1 className="absolute top-40 text-4xl font-serif italic text-center">
             <span className="text-indigo-500 font-mono">Compile</span>
             <span className="text-white font-sans">Storm</span>
         </h1>
