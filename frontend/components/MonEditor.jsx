@@ -62,6 +62,9 @@ export const MonEditor = (props) => {
         <select id="language" value={selected} onChange = {handleChange}>
             <option value = "">--Select--</option>
             <option value = "java">Java</option>
+            <option value = "c">C</option>
+            <option value = "c++">C++</option>
+            <option value = "python">Python</option>
         </select>
 
         <button onClick={executeCode}>Run</button>
