@@ -13,7 +13,7 @@ export default function Header(props){
 
     useEffect(()=>{
         async function fetch(){
-            await axios.get("https://compilestorm-backend.onrender.com//api/userDetails", {withCredentials : true})
+            await axios.get("https://compilestorm-backend.onrender.com/api/userDetails", {withCredentials : true})
             .then((res)=>{
                 setUser(res.data.userData)
             }).catch((e)=>console.log(e));
