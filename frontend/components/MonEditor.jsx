@@ -86,16 +86,17 @@ export const MonEditor = (props) => {
           value={map.get(selected)}
           options={editorOptions}
           height="500px"
+          width={"100%"}
           onChange={(newCode) => setCode(newCode)}
         />
       </div>
 
       {/* Input box */}
-      <div className="mt-4">
+      <div className="mt-4 rounded-lg overflow-hidden border border-zinc-700 shadow-inner">
         <label className="block text-sm font-medium text-indigo-400 mb-1">Input</label>
         <textarea
-          rows={4}
-          className="w-full bg-zinc-800 text-white border border-zinc-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-y"
+          rows={3}
+          className="w-full bg-zinc-900 text-white p-2 focus:outline-none focus:ring-indigo-500 resize-none border-0"
           onChange={(e) => setInput(e.target.value)}
           placeholder="Optional input for your program..."
         />

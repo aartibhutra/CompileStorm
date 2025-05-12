@@ -50,6 +50,5 @@ export default function SignIn () {
             
             <div className="pt-4">Don't have an account? <a href="/signup" className="hover:text-[#d00000] underline">Create an account!</a></div>
         </div>
-        <div className="basis-1/2 bg-[url(/images/backgroungimg.jpg)] h-screen"></div>
     </div>
 }
