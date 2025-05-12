@@ -1,6 +1,7 @@
 import { useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
+import { notifyError, notifySuccess } from "./utility/toast";
 
 export default function SignUp () {
     const navigate = useNavigate();
@@ -24,9 +25,11 @@ export default function SignUp () {
                     // notifySuccess("Signed In Successfully!");
                     console.log("User Logged In!");
                     navigate("/") // navigate to Home page
+                    notifySuccess("Signed Up Successfully!");
                 }).catch(()=>{
                     // notifyError("Invalid Credentials!")
                     console.log("Error Logging in!!");
+                    notifyError("Invalid Credentials!");
                 })
 
         } catch(err){
