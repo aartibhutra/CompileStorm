@@ -4,6 +4,7 @@ import MonacoEditor from 'react-monaco-editor';
 //utils
 import map from "./utility/map"
 import axios from "axios"
+import { notifyInfo } from './utility/toast';
 
 export const MonEditor = (props) => {
   const [monacoLoaded, setMonacoLoaded] = useState(false);
@@ -36,6 +37,9 @@ export const MonEditor = (props) => {
     const handleChange = (e) =>{
         setSelected(e.target.value);
         setCode(map.get(e.target.value))
+
+        if(e.target.value != "")
+          notifyInfo(`Language changed to ${e.target.value}`);
     }
 
     const executeCode = async ()=>{

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { notifyError, notifySuccess } from "./utility/toast";
 
 export default function Header(){
     const [user, setUser] = useState({username : "Guest000000000012"});
@@ -23,8 +24,12 @@ export default function Header(){
             console.log("signed out !");
             setShowDropDown(false);
             setUser({username : "Guest000000000012"});
+
+            notifySuccess("Signed Out Successfully!")
         }).catch((e)=>{
             console.log(e);
+
+            notifyError("Error Signing Out!")
         })
     }
 
