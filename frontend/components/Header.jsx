@@ -22,7 +22,7 @@ export default function Header(props){
     },[])
 
     const handleSignOut = async ()=>{
-        await axios.post("https://compilestorm-backend.onrender.com//api/signout").then(()=>{
+        await axios.post("https://compilestorm-backend.onrender.com/api/signout").then(()=>{
             console.log("signed out !");
             setShowDropDown(false);
             setUser({username : "Guest000000000012"});
