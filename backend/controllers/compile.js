@@ -76,8 +76,8 @@ exports.signin = async (req, res) => {
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 3600000 
+            secure: true,
+            sameSite :'None'
         });
         res.json({ message: 'Signin successful', token });
     } catch (error) {
