@@ -25,7 +25,7 @@ export default function ForgotPassword(){
         e.preventDefault();
 
         try{
-            console.log("hi")
+            // console.log("hi")
             await axios.post("http://localhost:3000/api/forgotPassword", {email : email})
                 .then(()=>{
                     notifySuccess("OTP sent!")
