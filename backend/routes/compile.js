@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {signup, signin, userDetails, runCode} = require("../controllers/compile")
+const {signup, signin, signout, userDetails, runCode} = require("../controllers/compile")
 const verifyToken = require('../middleware/verifytoken');
 // const { verify } = require('jsonwebtoken');
 
@@ -8,6 +8,8 @@ const verifyToken = require('../middleware/verifytoken');
 router.post('/signup', signup);
 // Signin route
 router.post('/signin', signin);
+// Signout route
+router.post("/signout", signout);
 
 router.get('/userDetails', verifyToken,  userDetails);
 

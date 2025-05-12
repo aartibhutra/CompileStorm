@@ -1,8 +1,12 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Header(){
-    const [user, setUser] = useState({username : "Guest"});
+    const [user, setUser] = useState({username : "Guest000000000012"});
+    const [showDropDown, setShowDropDown] = useState(false);
+
+    const navigate = useNavigate();
 
     useEffect(()=>{
         async function fetch(){
@@ -14,6 +18,16 @@ export default function Header(){
         fetch();
     },[])
 
+    const handleSignOut = async ()=>{
+        await axios.post("http://localhost:3000/api/signout").then(()=>{
+            console.log("signed out !");
+            setShowDropDown(false);
+            setUser({username : "Guest000000000012"});
+        }).catch((e)=>{
+            console.log(e);
+        })
+    }
+
     return <div>
         {/* Logo */}
         <h1>CompileStorm</h1>
@@ -21,7 +35,10 @@ export default function Header(){
         {/* Profile */}
         <div>
             {/* on click will show signout button */}
-            {user.username.charAt(0)}
+            <div onClick={()=>setShowDropDown(true)}>{user.username.charAt(0)}</div>
+            {!showDropDown ? <></> : <div>
+                {user.username == "Guest000000000012" ? <button onClick={()=>navigate("/signin")}>Sign In</button> : <button onClick={()=>handleSignOut()}>Sign Out</button>}
+            </div>}
         </div>
     </div>
 }
