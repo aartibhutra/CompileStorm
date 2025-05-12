@@ -72,12 +72,12 @@ export const MonEditor = (props) => {
   return (
     <div className="w-full h-screen px-4 py-4 overflow-auto">
       <div className="w-full flex flex-col gap-4">
-        <div className="flex items-center gap-4">
+        <div className="w-full flex justify-between items-center">
           <select
             id="language"
             value={selected}
             onChange={handleChange}
-            className="bg-zinc-800 text-white border border-zinc-600 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="bg-zinc-800 text-white text-sm border border-zinc-600 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
             <option value = "">--Select--</option>
             <option value = "java">Java</option>
@@ -89,10 +89,10 @@ export const MonEditor = (props) => {
           {/* <button onClick={executeCode} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
             Run
           </button> */}
-          {!run ? <button onClick={executeCode} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
+          {!run ? <button onClick={executeCode} className="px-3 py-1 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
             Run
           </button> :
-          <button disabled className="px-4 py-2 border-1 border-indigo-500 text-white rounded-md transition">
+          <button disabled className="px-3 py-1 text-sm border border-indigo-500 text-white rounded-md transition">
             Run
           </button>}
         </div>
