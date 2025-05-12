@@ -5,9 +5,11 @@ import MonacoEditor from 'react-monaco-editor';
 import map from "./utility/map"
 import axios from "axios"
 import { notifyInfo } from './utility/toast';
+import { useNavigate } from 'react-router-dom';
 
 export const MonEditor = (props) => {
   const [monacoLoaded, setMonacoLoaded] = useState(false);
+  const navigate = useNavigate();
 
   const [code, setCode] = useState("");
 
@@ -43,6 +45,11 @@ export const MonEditor = (props) => {
     }
 
     const executeCode = async ()=>{
+
+      if(props.user.username == "Guest000000000012"){
+        notifyInfo("Please login to execute code");
+        navigate("/signIn");
+      }
 
       props.setOp("...loading");
       

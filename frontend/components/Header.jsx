@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { notifyError, notifySuccess } from "./utility/toast";
 
-export default function Header(){
-    const [user, setUser] = useState({username : "Guest000000000012"});
+export default function Header(props){
+    const user = props.user;
+    const setUser = props.setUser;
+
     const [showDropDown, setShowDropDown] = useState(false);
 
     const navigate = useNavigate();
