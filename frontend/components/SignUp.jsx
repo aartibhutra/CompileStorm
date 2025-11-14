@@ -11,6 +11,10 @@ export default function SignUp () {
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
 
+    const [userError, setUserError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passError, setPassError] = useState("");
+
     async function handleSignUp(e){
         e.preventDefault(); // prevents the form to submit
         try{
@@ -18,6 +22,30 @@ export default function SignUp () {
                 "username" : username,
                 "email": email,
                 "password": pass
+            }
+            setUserError("");
+            setEmailError("");
+            setPassError("");
+
+            if (!username.trim()) {
+                setUserError("Username is required");
+            }
+            if (username.length < 3) {
+                setUserError("Username must be at least 3 characters");
+            }
+
+            if (!email.trim()) {
+                setEmailError("Email is required");
+            }
+            if (!email.includes("@")) {
+                setEmailError("Enter a valid email");
+            }
+
+            if (!pass.trim()) {
+                setPassError("Password is required");
+            }
+            if (pass.length < 8) {
+                setPassError("Password must be at least 8 characters");
             }
 
             await axios.post("https://compilestorm-backend.onrender.com/api/signup", body, {withCredentials : true}) //"withCredentials" allows us to send or receive cookies
@@ -51,16 +79,19 @@ export default function SignUp () {
                         type="username" placeholder="Username" value={username} onChange={(e)=>setUsername(e.target.value)}
                         className="bg-zinc-700 text-white p-2 rounded-md outline-none"
                     ></input>
+                    {userError && <p className="text-red-500 text-sm">{userError}</p>}
+
                     <input 
                         type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)}
                         className="bg-zinc-700 text-white p-2 rounded-md outline-none"
                     ></input>
+                    {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
 
                     <input 
                         type="password" placeholder="Password" onChange={(e)=>setPass(e.target.value)}
                         className="bg-zinc-700 text-white p-2 rounded-md outline-none"
                     ></input>
-                {/* <a href="/forgotPassword" className="hover:text-[#d00000] underline place-self-start text-sm pb-4">Forgot Password?</a> */}
+                    {passError && <p className="text-red-500 text-sm">{passError}</p>}
 
                     <button 
                         type="submit" onClick={(e)=>handleSignUp(e)}

@@ -35,8 +35,10 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+
 // Routes
 app.use("/api", compileRoutes);
+
 // MongoDB connection
 mongoose.connect(process.env.DATABASE_URI)
 .then(() => {

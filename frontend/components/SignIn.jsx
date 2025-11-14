@@ -10,6 +10,10 @@ export default function SignIn () {
     const [email, setEmail] = useState("");
     const [pass, setPass] = useState("");
 
+    const [emailError, setEmailError] = useState("");
+    const [passError, setPassError] = useState("");
+
+
     async function handleSignIn (e /* stands for event */){
         console.log("hi")
         e.preventDefault(); // prevents the form to submit
@@ -17,6 +21,22 @@ export default function SignIn () {
             const body = {
                 "email": email,
                 "password": pass
+            }
+
+            setEmailError("");
+            setPassError("");
+
+            if (!email.trim()) {
+                setEmailError("Email is required");
+            }
+            if (!email.includes("@")) {
+                setEmailError("Enter a valid email");
+            }
+            if (!pass.trim()) {
+                setPassError("Password is required");
+            }
+            if (pass.length < 8) {
+                setPassError("Password must be at least 8 characters");
             }
 
             await axios.post("https://compilestorm-backend.onrender.com/api/signin", body, {withCredentials : true}) //"withCredentials" allows us to send or receive cookies
@@ -49,11 +69,12 @@ export default function SignIn () {
                     type="email" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)}
                     className="bg-zinc-700 text-white p-2 rounded-md outline-none"
                 ></input>
-
+                {emailError && <p className="text-red-500 text-sm">{emailError}</p>}
                 <input 
                     type="password" placeholder="Password" onChange={(e)=>setPass(e.target.value)}
                     className="bg-zinc-700 text-white p-2 rounded-md outline-none"
                 ></input>
+                {passError && <p className="text-red-500 text-sm">{passError}</p>}
                 <a href="/forgotPassword" className="hover:text-[#d00000] underline text-sm pb-1">Forgot Password?</a>
 
                 <button type="submit" onClick={(e) => handleSignIn(e)}
