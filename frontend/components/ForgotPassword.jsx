@@ -26,7 +26,7 @@ export default function ForgotPassword(){
 
         try{
             // console.log("hi")
-            await axios.post("https://compilestorm-backend.onrender.com/api/forgotPassword", {email : email})
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/forgotPassword`, {email : email})
                 .then(()=>{
                     notifySuccess("OTP sent!")
                     
@@ -46,7 +46,7 @@ export default function ForgotPassword(){
         e.preventDefault();
         
         try{
-            await axios.post("https://compilestorm-backend.onrender.com/api/verifyOtp", {email : email, otp : otp})
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/verifyOtp`, {email : email, otp : otp})
                 .then(()=>{
                     notifySuccess("OTP Verified!")
                     setStep(3)
@@ -68,7 +68,7 @@ export default function ForgotPassword(){
         }
         
         try{
-            await axios.post("https://compilestorm-backend.onrender.com/api/resetPassword", {email : email, password : pass})
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/resetPassword`, {email : email, password : pass})
                 .then(()=>{
                     notifySuccess("Password Reset Successfully!")
                     navigate("/signin")

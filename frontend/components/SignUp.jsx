@@ -48,7 +48,7 @@ export default function SignUp () {
                 setPassError("Password must be at least 8 characters");
             }
 
-            await axios.post("https://compilestorm-backend.onrender.com/api/signup", body, {withCredentials : true}) //"withCredentials" allows us to send or receive cookies
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/signup`, body, {withCredentials : true}) //"withCredentials" allows us to send or receive cookies
                 .then(()=>{
                     // notifySuccess("Signed In Successfully!");
                     console.log("User Logged In!");

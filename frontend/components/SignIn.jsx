@@ -15,7 +15,7 @@ export default function SignIn () {
 
 
     async function handleSignIn (e /* stands for event */){
-        console.log("hi")
+        // console.log("hi")
         e.preventDefault(); // prevents the form to submit
         try{
             const body = {
@@ -39,7 +39,7 @@ export default function SignIn () {
                 setPassError("Password must be at least 8 characters");
             }
 
-            await axios.post("https://compilestorm-backend.onrender.com/api/signin", body, {withCredentials : true}) //"withCredentials" allows us to send or receive cookies
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/signin`, body, {withCredentials : true}) //"withCredentials" allows us to send or receive cookies
                 .then(()=>{
                     // notifySuccess("Signed In Successfully!");
                     console.log("User Logged In!");

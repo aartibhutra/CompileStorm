@@ -63,7 +63,7 @@ export const MonEditor = (props) => {
         inputs : input
       }
 
-      await axios.post("https://compilestorm-backend.onrender.com/api/runCode", body, {withCredentials : true}).then((res)=>{
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/runCode`, body, {withCredentials : true}).then((res)=>{
         setRun(false);
         props.setOp(res.data.run.output);
       })

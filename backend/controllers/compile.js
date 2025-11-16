@@ -114,37 +114,44 @@ exports.userDetails = async (req, res)=>{
     }
 }
 
-exports.runCode = async (req, res)=>{
-    try{
-        const {lang, content, inputs} = req.body;
-        
-        if(!lang || !content){
-            return res.status(400).json({ message: 'Missing values!' });
+exports.runCode = async (req, res) => {
+    try {
+        const { lang, content, inputs } = req.body;
+
+        if (!Array.isArray(content)) {
+            return res.status(400).json({ message: "Content should be array!" });
         }
 
         const data = map.get(lang);
-        if(!data){
-            return res.status(400).json({ message: 'Invalid Language!' });
+        // console.log(map.get.lang);
+
+        if (!data) {
+            return res.status(400).json({ message: "Invalid Language!" });
         }
 
-        data.files[0].content = content;
-        data.stdin = inputs;
+        data.files = [];
 
-        const response = await axios.post("https://emkc.org/api/v2/piston/execute", data);
-        
-        if(!response){
-            return res.status(400).json({ message: 'Error fetching response!' });
-        }
+        data.files = content.map(file => ({
+            name: `${file.name}`,
+            content: file.code
+        }));
 
-        res.status(200).json(response.data);
+        data.stdin = inputs || "";
+
+        console.log(data);
+
+        const response = await axios.post(
+            "https://emkc.org/api/v2/piston/execute",
+            data
+        );
+
+        return res.status(200).json(response.data);
+
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
-    catch(e){
-        console.error("Error running code!");
-        res.status(500).json({
-            message : 'Internal Server Error'
-        })
-    }
-}
+};
 
 const generateotp = ()=> Math.floor(Math.random()*1000000).toString() 
 

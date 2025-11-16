@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { notifyError, notifySuccess } from "./utility/toast";
 
-export default function Header(props){
-    const user = props.user;
-    const setUser = props.setUser;
+export default function Header({user, setUser}){
+    // const user = props.user;
+    // const setUser = props.setUser;
 
     const [showDropDown, setShowDropDown] = useState(false);
 
@@ -13,19 +13,20 @@ export default function Header(props){
 
     useEffect(()=>{
         async function fetch(){
-            await axios.get("https://compilestorm-backend.onrender.com/api/userDetails", {withCredentials : true})
+            await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/userDetails`, {withCredentials : true})
             .then((res)=>{
-                setUser(res.data.userData)
+                if(userData)
+                    setUser(res.data.userData)
             }).catch((e)=>console.log(e));
         }
         fetch();
     },[])
 
     const handleSignOut = async ()=>{
-        await axios.post("https://compilestorm-backend.onrender.com/api/signout").then(()=>{
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/signout`).then(()=>{
             console.log("signed out !");
             setShowDropDown(false);
-            setUser({username : "Guest000000000012"});
+            setUser("Guest000000000012");
 
             notifySuccess("Signed Out Successfully!")
         }).catch((e)=>{
@@ -47,9 +48,9 @@ export default function Header(props){
         <div className="absolute bottom-2 left-6 text-white">
             {/* on click will show signout button */}
             <div onClick={()=>setShowDropDown(!showDropDown)}
-                className="w-10 h-10 rounded-full bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center text-lg font-semibold cursor-pointer transition">{user.username.charAt(0)}</div>
+                className="w-10 h-10 rounded-full bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center text-lg font-semibold cursor-pointer transition">{user.charAt(0)}</div>
             {!showDropDown ? <></> : <div className="mt-2 bg-neutral-800 border border-neutral-600 rounded-md shadow-lg py-2 px-4">
-                {user.username == "Guest000000000012" ? <button onClick={()=>navigate("/signin")}>Sign In</button> : <button onClick={()=>handleSignOut()}>Sign Out</button>}
+                {user == "Guest000000000012" ? <button onClick={()=>navigate("/signin")}>Sign In</button> : <button onClick={()=>handleSignOut()}>Sign Out</button>}
             </div>}
         </div>
     </div>
