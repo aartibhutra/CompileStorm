@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { nanoid } from "nanoid";
-import { spawn } from "child_process"; // lets you run another program as a separate process (runs a command outside node and gives the live output)
-import fs from "fs"; // stands for file system (any operations related to files)
-import path from "path"; // helps to build and work with file paths safely cross platform
+import { spawn } from "child_process";
+import fs from "fs";
+import path from "path";
 
 const router = Router();
 
@@ -13,61 +13,70 @@ function convertToDockerPath(winPath: string) {
 }
 
 router.post("/run", async (req, res) => {
-  const { language, code, input } = req.body;
+  const { language, entryFile, input, files } = req.body;
 
-  if (!language || !code) {
-    return res.status(400).json({ error: "language and code are required" });
+  if (!language || !files || !entryFile) {
+    return res.status(400).json({
+      error: "language, entryFile, and files are required",
+    });
   }
 
+  // Create project directory
   const jobId = nanoid();
-  const jobDir = path.join(process.cwd(), "sandbox", jobId);
-  fs.mkdirSync(jobDir, { recursive: true });
+  const jobDir = path.join(process.cwd(), "sandbox", jobId); // sandbox is the folder they will be stored temporirily
+  fs.mkdirSync(jobDir, { recursive: true }); // if dir exist fine if not then create it
 
-  let filename = "";
+  for (const relativePath of Object.keys(files)) {
+    const fullPath = path.join(jobDir, relativePath);
+    const dir = path.dirname(fullPath);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(fullPath, files[relativePath]);
+  } // creating whole folder structure and writing the files content
+
+  // Build compile command + run command
   let compileCmd = "";
   let runCmd = "";
 
   switch (language) {
     case "python":
-      filename = "main.py";
-      fs.writeFileSync(path.join(jobDir, filename), code);
-      runCmd = "python3 main.py";
+      runCmd = `python3 ${entryFile}`;
       break;
-    case "java":
-      filename = "Main.java";
-      fs.writeFileSync(path.join(jobDir, filename), code);
-      compileCmd = "javac Main.java";
-      runCmd = "java Main";
-      break;
-    case "c":
-      filename = "main.c";
-      fs.writeFileSync(path.join(jobDir, filename), code);
-      compileCmd = "gcc main.c -o main";
-      runCmd = "./main";
-      break;
-    case "cpp":
-      filename = "main.cpp";
-      fs.writeFileSync(path.join(jobDir, filename), code);
-      compileCmd = "g++ main.cpp -o main";
-      runCmd = "./main";
-      break;
+
     case "js":
-      filename = "main.js";
-      fs.writeFileSync(path.join(jobDir, filename), code);
-      runCmd = "node main.js";
+      runCmd = `node ${entryFile}`;
       break;
+
+    case "java":
+      compileCmd = `javac $(find . -name "*.java")`; // searches every direc to get the name consisting .java
+      const mainClass = path.basename(entryFile, ".java"); // returns the file name from the path and strips .java from it so for Main.java it is Main
+      runCmd = `java ${mainClass}`;
+      break;
+
+    case "c":
+      compileCmd = `gcc $(find . -name "*.c") -o main`;
+      runCmd = `./main`;
+      break;
+
+    case "cpp":
+      compileCmd = `g++ $(find . -name "*.cpp") -o main`;
+      runCmd = `./main`;
+      break;
+
+    default:
+      return res.status(400).json({ error: "Unsupported language" });
   }
 
   const mountPath = convertToDockerPath(jobDir);
 
+  // Build Docker command
   const args = [
     "run",
-    "--rm",
-    "-i", //interactive mode to give inputs
-    "-v",
+    "--rm", // remove the docker when the process is finished
+    "-i", // make it interactive to take input also or to get access to cli
+    "-v", // mount this volume to the /sandbox in the docker container
     `${mountPath}:/sandbox`,
-    "compile-sandbox",
-    "bash",
+    "compile-sandbox", // name of the docker image
+    "bash", 
     "-c",
     `cd /sandbox && ${compileCmd ? compileCmd + " && " : ""}${runCmd}`,
   ];
@@ -75,20 +84,14 @@ router.post("/run", async (req, res) => {
   let stdout = "";
   let stderr = "";
 
-  const child = spawn("docker", args);
+  const child = spawn("docker", args); // start docker process 
 
-  if (input) {
-    child.stdin.write(input + "\n");
-  }
+  // Pass runtime input (stdin)
+  if (input) child.stdin.write(input + "\n");
   child.stdin.end();
 
-  child.stdout.on("data", (data) => {
-    stdout += data.toString();
-  });
-
-  child.stderr.on("data", (data) => {
-    stderr += data.toString();
-  });
+  child.stdout.on("data", (data) => (stdout += data.toString()));
+  child.stderr.on("data", (data) => (stderr += data.toString()));
 
   child.on("close", () => {
     fs.rm(jobDir, { recursive: true, force: true }, () => {});
