@@ -1,1 +1,2 @@
-https://criticizable-robbin-overblindly.ngrok-free
+ngrok http 3000
+https://criticizable-robbin-overblindly.ngrok-free/dev

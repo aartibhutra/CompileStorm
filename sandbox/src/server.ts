@@ -12,12 +12,6 @@ app.use(cors());
 
 app.use("/api/v1", CodeRoutes);
 
-// app.get("/", (req, res)=>{
-//   return res.status(200).json(
-//     "ho"
-//   )
-// })
-
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on PORT : ${PORT}`);

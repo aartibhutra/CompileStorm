@@ -37,6 +37,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api", compileRoutes);
+app.use("/api", require("./routes/project"));
 
 // MongoDB connection
 mongoose.connect(process.env.DATABASE_URI)

@@ -12,6 +12,11 @@ function convertToDockerPath(winPath: string) {
   return p;
 }
 
+function extractJavaPackage(javaCode: any) {
+  const match = javaCode.match(/^\s*package\s+([\w\.]+)\s*;/m);
+  return match ? match[1] : ""; // "" means default package
+}
+
 router.post("/run", async (req, res) => {
   const { language, entryFile, input, files } = req.body;
 
@@ -46,10 +51,24 @@ router.post("/run", async (req, res) => {
       runCmd = `node ${entryFile}`;
       break;
 
+    // case "java":
+    //   compileCmd = `javac $(find . -name "*.java")`; // searches every direc to get the name consisting .java
+    //   const mainClass = path.basename(entryFile, ".java"); // returns the file name from the path and strips .java from it so for Main.java it is Main
+    //   runCmd = `java ${mainClass}`;
+    //   break;
+
     case "java":
-      compileCmd = `javac $(find . -name "*.java")`; // searches every direc to get the name consisting .java
-      const mainClass = path.basename(entryFile, ".java"); // returns the file name from the path and strips .java from it so for Main.java it is Main
-      runCmd = `java ${mainClass}`;
+      compileCmd = `javac $(find . -name "*.java")`;
+
+      // Extract package from the actual file content
+      const entryContent = files[entryFile];
+      const pkg = extractJavaPackage(entryContent);   // "" or "app" or "mypkg.util"
+
+      const simpleName = path.basename(entryFile, ".java");  // Main
+
+      const mainClassName = pkg ? `${pkg}.${simpleName}` : simpleName;
+
+      runCmd = `java -cp . ${mainClassName}`;
       break;
 
     case "c":

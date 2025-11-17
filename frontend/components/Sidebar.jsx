@@ -1,130 +1,49 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import JavaOriginal from "devicons-react/icons/JavaOriginal";
+import JavascriptOriginal from "devicons-react/icons/JavascriptOriginal";
+import COriginal from "devicons-react/icons/COriginal";
+import CplusplusOriginal from "devicons-react/icons/CplusplusOriginal";
+import PythonOriginal from "devicons-react/icons/PythonOriginal";
+import Modal from "./Modal"; // <-- Your new modal
 
-export default function Sidebar({ onFileSelect }) {
+export default function Sidebar({ project, onFileSelect, updateStructure }) {
   const [directories, setDirectories] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [topDropdown, setTopDropdown] = useState(false);
 
-  const getFileIcon = (fileName) => {
-    const ext = fileName.split('.').pop().toLowerCase();
-    switch (ext) {
-      case 'java': return '☕';
-      case 'py': return '🐍';
-      case 'js': return '📜';
-      case 'c': return '🔧';
-      case 'cpp': return '🔨';
-      default: return '📄';
-    }
-  };
-
-  const getLanguage = (fileName) => {
-    const ext = fileName.split('.').pop().toLowerCase();
-    switch (ext) {
-      case 'java': return 'java';
-      case 'py': return 'python';
-      case 'js': return 'javascript';
-      case 'c': return 'c';
-      case 'cpp': return 'cpp';
-      default: return 'other';
-    }
-  };
+  const [modal, setModal] = useState({
+    open: false,
+    mode: null,
+    keyPath: null,
+    item: null,
+  });
 
   useEffect(() => {
-    // Load directories from localStorage or initialize with default
-    const savedDirs = localStorage.getItem('directories');
-    if (savedDirs) {
-      setDirectories(JSON.parse(savedDirs));
-    } else {
-      setDirectories([{ name: 'root', type: 'folder', children: [] }]);
+    if (project?.structure) {
+      setDirectories(project.structure);
     }
-  }, []);
+  }, [project]);
 
   const saveDirectories = (newDirs) => {
     setDirectories(newDirs);
-    localStorage.setItem('directories', JSON.stringify(newDirs));
+    updateStructure(newDirs);
   };
 
+  // ===================== HELPERS =====================
   const addAtPath = (dirs, path, newItem) => {
-    if (path.length === 1) {
-      dirs[path[0]].children.push(newItem);
+    if (path.length === 0) {
+      dirs.push(newItem);
       return dirs;
     }
-    const [currentIndex, ...remainingPath] = path;
-    dirs[currentIndex].children = addAtPath(dirs[currentIndex].children, remainingPath, newItem);
+    const [cur, ...rest] = path;
+    dirs[cur].children = addAtPath(dirs[cur].children, rest, newItem);
     return dirs;
   };
 
   const getAtPath = (dirs, path) => {
-    if (path.length === 0) return null;
     if (path.length === 1) return dirs[path[0]];
-    const [currentIndex, ...remainingPath] = path;
-    return getAtPath(dirs[currentIndex].children, remainingPath);
-  };
-
-  const addDirectory = (path = null) => {
-    const name = prompt('Enter directory name:');
-    if (name) {
-      const newDir = { name, type: 'folder', children: [] };
-      const newDirs = [...directories];
-      if (path === null) {
-        newDirs.push(newDir);
-      } else {
-        const updatedDirs = addAtPath(newDirs, path, newDir);
-        saveDirectories(updatedDirs);
-        return;
-      }
-      saveDirectories(newDirs);
-    }
-  };
-
-  const addFile = (path) => {
-    const name = prompt('Enter file name (with extension):');
-    if (name) {
-      if (!name.includes('.')) {
-        alert('Please include a file extension (e.g., .java, .py, .js, .c, .cpp)');
-        return;
-      }
-      const ext = name.split('.').pop().toLowerCase();
-      if (!['java', 'py', 'js', 'c', 'cpp'].includes(ext)) {
-        alert('Unsupported file extension. Supported: .java, .py, .js, .c, .cpp');
-        return;
-      }
-      const newFile = { name, type: 'file', content: '' };
-      const newDirs = [...directories];
-      const newLanguage = getLanguage(name);
-      if (path === null) {
-        // Check top-level language consistency
-        const existingFiles = newDirs.filter(item => item.type === 'file');
-        if (existingFiles.length > 0) {
-          const existingLanguage = getLanguage(existingFiles[0].name);
-          if (existingLanguage !== newLanguage) {
-            alert(`Cannot add file. This location only allows ${existingLanguage} files.`);
-            return;
-          }
-        }
-        newDirs.push(newFile);
-        saveDirectories(newDirs);
-      } else {
-        // Check language consistency in folder
-        const folder = getAtPath(newDirs, path);
-        if (folder && folder.children.length > 0) {
-          const existingFiles = folder.children.filter(child => child.type === 'file');
-          if (existingFiles.length > 0) {
-            const existingLanguage = getLanguage(existingFiles[0].name);
-            if (existingLanguage !== newLanguage) {
-              alert(`Cannot add file. This location only allows ${existingLanguage} files.`);
-              return;
-            }
-          }
-        }
-        const updatedDirs = addAtPath(newDirs, path, newFile);
-        saveDirectories(updatedDirs);
-      }
-    }
-  };
-
-  const selectFile = (file, parentIndex) => {
-    onFileSelect(file, parentIndex);
+    const [cur, ...rest] = path;
+    return getAtPath(dirs[cur].children, rest);
   };
 
   const deleteAtPath = (dirs, path) => {
@@ -132,86 +51,318 @@ export default function Sidebar({ onFileSelect }) {
       dirs.splice(path[0], 1);
       return dirs;
     }
-    const [currentIndex, ...remainingPath] = path;
-    dirs[currentIndex].children = deleteAtPath(dirs[currentIndex].children, remainingPath);
+    const [cur, ...rest] = path;
+    dirs[cur].children = deleteAtPath(dirs[cur].children, rest);
     return dirs;
   };
 
-  const deleteItem = (item, path) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete "${item.name}"?`);
-    if (confirmDelete) {
-      const newDirs = [...directories];
-      const updatedDirs = deleteAtPath(newDirs, path);
-      saveDirectories(updatedDirs);
-      // If the deleted item was a file and was selected, deselect it
-      if (item.type === 'file') {
-        onFileSelect(null, null);
-      }
-    }
-  };
-
-  const toggleDropdown = (index) => {
-    setOpenDropdown(openDropdown === index ? null : index);
-  };
-
-  const renderTree = (items, parentPath = []) => {
-    return items.map((item, index) => {
-      const currentPath = [...parentPath, index];
-      const itemId = currentPath.join('-');
-      return (
-        <div key={index} className="ml-4">
-          <div className="flex items-center relative">
-            {item.type === 'folder' ? (
-              <>
-                <span className="text-yellow-400">📁</span>
-                <span className="ml-2 text-white">{item.name}</span>
-                <div className="ml-auto relative">
-                  <button onClick={() => toggleDropdown(itemId)} className="text-white text-xs px-1 rounded hover:bg-zinc-700">⋮</button>
-                  {openDropdown === itemId && (
-                    <div className="absolute right-0 mt-1 w-32 bg-zinc-700 border border-zinc-600 rounded shadow-lg z-10">
-                      <button onClick={() => { addDirectory(currentPath); setOpenDropdown(null); }} className="block w-full text-left px-3 py-1 text-xs text-white hover:bg-zinc-600">Add Folder</button>
-                      <button onClick={() => { addFile(currentPath); setOpenDropdown(null); }} className="block w-full text-left px-3 py-1 text-xs text-white hover:bg-zinc-600">Add File</button>
-                      <button onClick={() => { deleteItem(item, currentPath); setOpenDropdown(null); }} className="block w-full text-left px-3 py-1 text-xs text-red-400 hover:bg-zinc-600">Delete</button>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                <span className="text-blue-400">{getFileIcon(item.name)}</span>
-                <span className="ml-2 text-white cursor-pointer" onClick={() => selectFile(item, parentPath.length > 0 ? parentPath[parentPath.length - 1] : null)}>{item.name}</span>
-                <div className="ml-auto relative">
-                  <button onClick={() => toggleDropdown(itemId)} className="text-white text-xs px-1 rounded hover:bg-zinc-700">⋮</button>
-                  {openDropdown === itemId && (
-                    <div className="absolute right-0 mt-1 w-32 bg-zinc-700 border border-zinc-600 rounded shadow-lg z-10">
-                      <button onClick={() => { deleteItem(item, currentPath); setOpenDropdown(null); }} className="block w-full text-left px-3 py-1 text-xs text-red-400 hover:bg-zinc-600">Delete</button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-          {item.children && renderTree(item.children, currentPath)}
-        </div>
-      );
+  // ===================== MODAL TRIGGERS =====================
+  const addFolderWindow = (keyPath) => {
+    setModal({
+      open: true,
+      mode: "addFolder",
+      keyPath,
+      item: null,
     });
   };
 
+  const addFileWindow = (keyPath) => {
+    setModal({
+      open: true,
+      mode: "addFile",
+      keyPath,
+      item: null,
+    });
+  };
+
+  const renameWindow = (item, keyPath) => {
+    setModal({
+      open: true,
+      mode: "rename",
+      keyPath,
+      item,
+    });
+  };
+
+  // ===================== MODAL SUBMIT LOGIC =====================
+  const handleModalSubmit = (value) => {
+    if (!value) {
+      setModal({ open: false });
+      return;
+    }
+
+    const { mode, keyPath, item } = modal;
+    const newDirs = JSON.parse(JSON.stringify(directories));
+
+    if (mode === "addFolder") {
+      const newFolder = { name: value, type: "folder", children: [] };
+      if (!keyPath) newDirs.push(newFolder);
+      else addAtPath(newDirs, keyPath, newFolder);
+
+      saveDirectories(newDirs);
+    }
+
+    if (mode === "addFile") {
+      if (!value.includes(".")) {
+        alert("Filename must include extension");
+        return;
+      }
+      const newFile = { name: value, type: "file", content: "" };
+      if (!keyPath) newDirs.push(newFile);
+      else addAtPath(newDirs, keyPath, newFile);
+
+      saveDirectories(newDirs);
+    }
+
+    if (mode === "rename") {
+      const target = getAtPath(newDirs, keyPath);
+      target.name = value;
+      saveDirectories(newDirs);
+    }
+
+    setModal({ open: false });
+  };
+
+  // ===================== DELETE ITEM =====================
+  const deleteItem = (item, keyPath) => {
+    if (!window.confirm(`Delete "${item.name}"?`)) return;
+
+    const newDirs = JSON.parse(JSON.stringify(directories));
+    saveDirectories(deleteAtPath(newDirs, keyPath));
+
+    if (item.type === "file") onFileSelect(null);
+  };
+
+  // ===================== SELECT FILE =====================
+  const selectFile = (item, namePath) => {
+    const fullPath = namePath.join("/");
+    onFileSelect({ ...item, fullPath });
+  };
+
+  const toggleDropdown = (id) => {
+    setOpenDropdown(openDropdown === id ? null : id);
+  };
+
+  // ===================== RENDER TREE =====================
+  const renderTree = (items, namePath = [], keyPath = []) =>
+    items.map((item, index) => {
+      const newKeyPath = [...keyPath, index];
+      const newNamePath = [...namePath, item.name];
+      const id = newKeyPath.join("-");
+
+      return (
+        <div key={id} className="ml-4">
+          <div className="flex items-center relative">
+
+            {/* --------- FOLDER --------- */}
+            {item.type === "folder" ? (
+              <>
+                <span className="text-yellow-400">📁</span>
+                <span className="ml-2 text-white">{item.name}</span>
+
+                <button
+                  onClick={() => toggleDropdown(id)}
+                  className="ml-auto text-white text-xs px-1 hover:bg-zinc-700 rounded"
+                >
+                  ⋮
+                </button>
+
+                {openDropdown === id && (
+                  <div className="absolute right-0 mt-1 w-32 bg-zinc-700 border border-zinc-600 rounded shadow-lg z-10">
+                    <button
+                      onClick={() => {
+                        addFolderWindow(newKeyPath);
+                        setOpenDropdown(null);
+                      }}
+                      className="px-3 py-1 text-xs hover:bg-zinc-600 text-white w-full text-left"
+                    >
+                      Add Folder
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        addFileWindow(newKeyPath);
+                        setOpenDropdown(null);
+                      }}
+                      className="px-3 py-1 text-xs hover:bg-zinc-600 text-white w-full text-left"
+                    >
+                      Add File
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        renameWindow(item, newKeyPath);
+                        setOpenDropdown(null);
+                      }}
+                      className="px-3 py-1 text-xs text-indigo-300 hover:bg-zinc-600 w-full text-left"
+                    >
+                      Rename
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        deleteItem(item, newKeyPath);
+                        setOpenDropdown(null);
+                      }}
+                      className="px-3 py-1 text-xs text-red-400 hover:bg-zinc-600 w-full text-left"
+                    >
+                      Delete
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setOpenDropdown(null);
+                      }}
+                      className="px-3 py-1 text-xs text-red-400 hover:bg-zinc-600 w-full text-left"
+                    >
+                      Close
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {/* --------- FILE --------- */}
+                <span className="text-blue-400 flex items-center">
+
+                  {item.name.endsWith(".java") && <JavaOriginal size={18} />}
+                  {item.name.endsWith(".js") && <JavascriptOriginal size={18} />}
+                  {item.name.endsWith(".c") && <COriginal size={18} />}
+                  {item.name.endsWith(".cpp") && <CplusplusOriginal size={18} />}
+                  {item.name.endsWith(".py") && <PythonOriginal size={18} />}
+
+                  {!(
+                    item.name.endsWith(".java") ||
+                    item.name.endsWith(".js") ||
+                    item.name.endsWith(".c") ||
+                    item.name.endsWith(".cpp") ||
+                    item.name.endsWith(".py")
+                  ) && <span className="text-gray-300">📄</span>}
+                </span>
+
+                <span
+                  className="ml-2 text-white cursor-pointer"
+                  onClick={() => selectFile(item, newNamePath)}
+                >
+                  {item.name}
+                </span>
+
+                <button
+                  onClick={() => toggleDropdown(id)}
+                  className="ml-auto text-white text-xs px-1 hover:bg-zinc-700 rounded"
+                >
+                  ⋮
+                </button>
+
+                {openDropdown === id && (
+                  <div className="absolute right-0 mt-1 w-32 bg-zinc-700 border border-zinc-600 rounded shadow-lg z-10">
+                    <button
+                      onClick={() => {
+                        renameWindow(item, newKeyPath);
+                        setOpenDropdown(null);
+                      }}
+                      className="px-3 py-1 text-xs text-indigo-300 hover:bg-zinc-600 w-full text-left"
+                    >
+                      Rename
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        deleteItem(item, newKeyPath);
+                        setOpenDropdown(null);
+                      }}
+                      className="px-3 py-1 text-xs text-red-400 hover:bg-zinc-600 w-full text-left"
+                    >
+                      Delete
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setOpenDropdown(null);
+                      }}
+                      className="px-3 py-1 text-xs text-red-400 hover:bg-zinc-600 w-full text-left"
+                    >
+                      Close
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {item.children && renderTree(item.children, newNamePath, newKeyPath)}
+        </div>
+      );
+    });
+
   return (
     <div className="w-64 bg-zinc-800 p-4 overflow-y-auto">
-      <h2 className="text-lg font-semibold text-indigo-400 mb-4">Directories</h2>
+
+      {/* Add Button */}
       <div className="mb-4 relative">
-        <button onClick={() => setTopDropdown(!topDropdown)} className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md text-sm">
+        <button
+          onClick={() => setTopDropdown(!topDropdown)}
+          className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md text-sm"
+        >
           Add
         </button>
+
         {topDropdown && (
           <div className="absolute left-0 mt-1 w-32 bg-zinc-700 border border-zinc-600 rounded shadow-lg z-10">
-            <button onClick={() => { addDirectory(null); setTopDropdown(false); }} className="block w-full text-left px-3 py-1 text-xs text-white hover:bg-zinc-600">Add Folder</button>
-            <button onClick={() => { addFile(null); setTopDropdown(false); }} className="block w-full text-left px-3 py-1 text-xs text-white hover:bg-zinc-600">Add File</button>
+            <button
+              onClick={() => {
+                addFolderWindow(null);
+                setTopDropdown(false);
+              }}
+              className="px-3 py-1 text-xs hover:bg-zinc-600 text-white w-full text-left"
+            >
+              Add Folder
+            </button>
+
+            <button
+              onClick={() => {
+                addFileWindow(null);
+                setTopDropdown(false);
+              }}
+              className="px-3 py-1 text-xs hover:bg-zinc-600 text-white w-full text-left"
+            >
+              Add File
+            </button>
+
+            <button
+              onClick={() => {
+                setTopDropdown(null);
+              }}
+              className="px-3 py-1 text-xs text-red-400 hover:bg-zinc-600 w-full text-left"
+            >
+              Close
+            </button>
           </div>
         )}
       </div>
+
       {renderTree(directories)}
+
+      {/* Modal */}
+      <Modal
+        open={modal.open}
+        title={
+          modal.mode === "addFolder"
+            ? "Add Folder"
+            : modal.mode === "addFile"
+            ? "Add File"
+            : "Rename"
+        }
+        placeholder={
+          modal.mode === "addFolder"
+            ? "Folder name"
+            : modal.mode === "addFile"
+            ? "Filename with extension"
+            : modal.item?.name
+        }
+        onClose={() => setModal({ open: false })}
+        onSubmit={handleModalSubmit}
+      />
     </div>
   );
 }

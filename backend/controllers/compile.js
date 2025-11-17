@@ -8,7 +8,6 @@ const axios = require("axios")
 const JWT_SECRET = process.env.JWT_SECRET;
 
 //utilities
-const map = require("./lang");
 const {signInSchema, signUpSchema} = require('../models/zodSchema');
 const {sendEmail} = require('./emailService')
 
@@ -88,7 +87,13 @@ exports.signin = async (req, res) => {
 
 exports.signout = async (req, res) => {
     try{
-        res.clearCookie("token").json({ message: "Logged out successfully" }); //remove the cookie named 'token'
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            path: "/"
+        });
+        return res.status(200).json({ message: "Logged out successfully" }); //remove the cookie named 'token'
     }
     catch(e){
         console.error('Signout error:', error);
