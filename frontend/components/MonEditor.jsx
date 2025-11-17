@@ -8,16 +8,41 @@ import { notifyInfo } from './utility/toast';
 import { useNavigate } from 'react-router-dom';
 
 export const MonEditor = (props) => {
-  const [monacoLoaded, setMonacoLoaded] = useState(false);
+
   const navigate = useNavigate();
 
   const [code, setCode] = useState("");
 
   const [input, setInput] = useState("");
 
+  const [fileName, setFileName] = useState("");
+
+  // Update code when a file is selected
+  useEffect(() => {
+    if (props.selectedFile) {
+      setCode(props.selectedFile.content || "");
+      setFileName(props.selectedFile.name || "");
+      // Set language based on file extension
+      const ext = props.selectedFile.name.split('.').pop().toLowerCase();
+      const langMap = {
+        'java': 'java',
+        'c': 'c',
+        'cpp': 'c++',
+        'py': 'python',
+        'js': 'javascript'
+      };
+      setSelected(langMap[ext] || "");
+    } else {
+      // Clear when no file is selected
+      setCode("");
+      setFileName("");
+      setSelected("");
+    }
+  }, [props.selectedFile]);
+
   useEffect(() => {
     // Load Monaco Editor asynchronously
-    import('monaco-editor').then(() => setMonacoLoaded(true));
+    import('monaco-editor').then(() => {});
   }, []);
 
   const editorOptions = {
@@ -73,18 +98,21 @@ export const MonEditor = (props) => {
     <div className="w-full h-screen px-4 py-4 overflow-auto">
       <div className="w-full flex flex-col gap-4">
         <div className="w-full flex justify-between items-center">
-          <select
-            id="language"
-            value={selected}
-            onChange={handleChange}
-            className="bg-zinc-800 text-white text-sm border border-zinc-600 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
-          >
-            <option value = "">--Select--</option>
-            <option value = "java">Java</option>
-            <option value = "c">C</option>
-            <option value = "c++">C++</option>
-            <option value = "python">Python</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <select
+              id="language"
+              value={selected}
+              onChange={handleChange}
+              className="bg-zinc-800 text-white text-sm border border-zinc-600 px-2 py-1 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            >
+              <option value = "">--Select--</option>
+              <option value = "java">Java</option>
+              <option value = "c">C</option>
+              <option value = "c++">C++</option>
+              <option value = "python">Python</option>
+            </select>
+            {fileName && <span className="text-white text-sm">{fileName}</span>}
+          </div>
 
           {/* <button onClick={executeCode} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
             Run
@@ -99,9 +127,10 @@ export const MonEditor = (props) => {
 
       <div className="rounded-lg overflow-hidden border border-zinc-700 shadow-inner w-full max-w-full h-[60vh]">
         <MonacoEditor
+          key={props.selectedFile ? props.selectedFile.name : 'no-file'}
           language={selected}
           theme="vs-dark"
-          value={map.get(selected)}
+          value={code}
           options={editorOptions}
           height="100%"
           width={"100%"}

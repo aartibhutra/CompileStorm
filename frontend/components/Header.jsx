@@ -15,7 +15,7 @@ export default function Header({user, setUser}){
         async function fetch(){
             await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/userDetails`, {withCredentials : true})
             .then((res)=>{
-                if(userData)
+                if(res.data.userData)
                     setUser(res.data.userData)
             }).catch((e)=>console.log(e));
         }
@@ -36,16 +36,16 @@ export default function Header({user, setUser}){
         })
     }
 
-    //  nav bar 
+    //  nav bar
     return <div className="bg-neutral-800 text-white pl-0 pr-6 py-2 flex items-start justify-between shadow-md">
         {/* Logo */}
         <h1 className="mt-4 ml-4 text-xl font-serif italic leading-tight tracking-tight text-white">
-            <span className="block text-indigo-400">Compile</span>
-            <span className="block text-white">Storm</span>
+            <span className="text-indigo-400">Compile</span>
+            <span className="text-white">Storm</span>
         </h1>
-        
+
         {/* Profile */}
-        <div className="absolute bottom-2 left-6 text-white">
+        <div className="absolute top-2 right-6 text-white">
             {/* on click will show signout button */}
             <div onClick={()=>setShowDropDown(!showDropDown)}
                 className="w-10 h-10 rounded-full bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center text-lg font-semibold cursor-pointer transition">{user.charAt(0)}</div>
