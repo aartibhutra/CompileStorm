@@ -7,7 +7,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   // "https://compilestorm-frontend.netlify.app",
-  // "https://compilestorm.devsapp.tech"
+  "https://compilestorm.devsapp.tech"
 ];
 
 app.use(
