@@ -114,41 +114,52 @@ exports.userDetails = async (req, res)=>{
     }
 }
 
+const AvailableLanguages = [
+    "java",
+    "python",
+    "cpp",
+    "c",
+    "js"
+];
+
 exports.runCode = async (req, res) => {
     try {
-        const { lang, content, inputs } = req.body;
+        const { language, entryFile, input, files } = req.body;
 
-        if (!Array.isArray(content)) {
-            return res.status(400).json({ message: "Content should be array!" });
+        // Validate available language
+        if (!AvailableLanguages.includes(language)) {
+            return res.status(400).json({ message: "Unsupported language!" });
         }
 
-        const data = map.get(lang);
-        // console.log(map.get.lang);
-
-        if (!data) {
-            return res.status(400).json({ message: "Invalid Language!" });
+        // Validate files object
+        if (!files || typeof files !== "object") {
+            return res.status(400).json({ message: "Files must be an object!" });
         }
 
-        data.files = [];
+        // Get sandbox compile/run config
+        const langConfig = AvailableLanguages.indexOf(language);
+        if (langConfig == -1) {
+            return res.status(400).json({ message: "Invalid language config!" });
+        }
 
-        data.files = content.map(file => ({
-            name: `${file.name}`,
-            content: file.code
-        }));
+        const payload = {
+            language,
+            entryFile,
+            input: input || "",
+            files: files
+        };
 
-        data.stdin = inputs || "";
-
-        console.log(data);
+        console.log("Sending payload to sandbox:", payload);
 
         const response = await axios.post(
-            "https://emkc.org/api/v2/piston/execute",
-            data
+            `${process.env.SANDBOX_URL}/run`,
+            payload,
         );
 
         return res.status(200).json(response.data);
 
-    } catch (e) {
-        console.error(e);
+    } catch (err) {
+        console.error(err);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };
