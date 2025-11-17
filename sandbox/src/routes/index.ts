@@ -57,19 +57,21 @@ router.post("/run", async (req, res) => {
     //   runCmd = `java ${mainClass}`;
     //   break;
 
-    case "java":
-      compileCmd = `javac $(find . -name "*.java")`;
+    case "java": {
+        // Correct compile command
+        compileCmd = `javac -d . $(find . -name "*.java")`;
 
-      // Extract package from the actual file content
-      const entryContent = files[entryFile];
-      const pkg = extractJavaPackage(entryContent);   // "" or "app" or "mypkg.util"
+        // Extract package name from entry file
+        const entryContent = files[entryFile];
+        const pkg = extractJavaPackage(entryContent);
 
-      const simpleName = path.basename(entryFile, ".java");  // Main
+        const simpleName = path.basename(entryFile, ".java");
 
-      const mainClassName = pkg ? `${pkg}.${simpleName}` : simpleName;
+        const mainClassName = pkg ? `${pkg}.${simpleName}` : simpleName;
 
-      runCmd = `java -cp . ${mainClassName}`;
-      break;
+        runCmd = `java -cp . ${mainClassName}`;
+        break;
+      }
 
     case "c":
       compileCmd = `gcc $(find . -name "*.c") -o main`;
