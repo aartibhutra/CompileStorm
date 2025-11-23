@@ -1,5 +1,10 @@
 [
   {
+    "id": "1763882245502",
+    "text": "install redis in sandbox linux",
+    "completed": false
+  },
+  {
     "id": "1763360621833",
     "text": "edit the backend routes",
     "completed": false

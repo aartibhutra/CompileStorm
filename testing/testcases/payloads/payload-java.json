@@ -1,0 +1,8 @@
+{
+  "language": "java",
+  "entryFile": "Main.java",
+  "files": {
+    "Main.java": "class Main{public static void main(String[]args){System.out.println(55);}}"
+  },
+  "input": ""
+}

@@ -1,0 +1,8 @@
+{
+  "language": "cpp",
+  "entryFile": "main.cpp",
+  "files": {
+    "main.cpp": "#include<iostream>\nint main(){std::cout<<7;}"
+  },
+  "input": ""
+}

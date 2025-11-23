@@ -1,0 +1,8 @@
+{
+  "language": "js",
+  "entryFile": "main.js",
+  "files": {
+    "main.js": "console.log(99)"
+  },
+  "input": ""
+}

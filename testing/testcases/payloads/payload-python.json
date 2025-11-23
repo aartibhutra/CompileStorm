@@ -1,0 +1,8 @@
+{
+  "language": "python",
+  "entryFile": "main.py",
+  "files": {
+    "main.py": "print(10)"
+  },
+  "input": ""
+}
