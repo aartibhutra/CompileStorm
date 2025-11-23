@@ -51,17 +51,9 @@ router.post("/run", async (req, res) => {
       runCmd = `node ${entryFile}`;
       break;
 
-    // case "java":
-    //   compileCmd = `javac $(find . -name "*.java")`; // searches every direc to get the name consisting .java
-    //   const mainClass = path.basename(entryFile, ".java"); // returns the file name from the path and strips .java from it so for Main.java it is Main
-    //   runCmd = `java ${mainClass}`;
-    //   break;
-
     case "java": {
-        // Correct compile command
         compileCmd = `javac -d . $(find . -name "*.java")`;
 
-        // Extract package name from entry file
         const entryContent = files[entryFile];
         const pkg = extractJavaPackage(entryContent);
 
