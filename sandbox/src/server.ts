@@ -4,6 +4,9 @@ import cors from "cors";
 
 import CodeRoutes from "./routes/index";
 
+import { WorkerPool } from "./workers/pool";
+export const workerPool = new WorkerPool(4); // baseline: 4 workers
+
 const app = express();
 dotenv.config();
 

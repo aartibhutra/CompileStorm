@@ -1,115 +1,33 @@
 import { Router } from "express";
-import { nanoid } from "nanoid";
-import { spawn } from "child_process";
-import fs from "fs";
-import path from "path";
+import { workerPool } from "../server";
 
 const router = Router();
 
-function convertToDockerPath(winPath: string) {
-  let p = winPath.replace(/\\/g, "/");
-  p = p.replace(/^C:/i, "/c");
-  return p;
-}
-
-function extractJavaPackage(javaCode: any) {
-  const match = javaCode.match(/^\s*package\s+([\w\.]+)\s*;/m);
-  return match ? match[1] : ""; // "" means default package
-}
-
 router.post("/run", async (req, res) => {
-  const { language, entryFile, input, files } = req.body;
+  try {
+    const { language, entryFile, input, files } = req.body;
 
-  if (!language || !files || !entryFile) {
-    return res.status(400).json({
-      error: "language, entryFile, and files are required",
+    if (!language || !entryFile || !files) {
+      return res.status(400).json({
+        error: "language, entryFile, and files are required",
+      });
+    }
+
+    // Send job to worker pool (baseline no scheduling)
+    const result = await workerPool.runJob({
+      language,
+      entryFile,
+      input: input || "",
+      files,
+    });
+
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({
+      error: "Error executing job",
+      details: err.toString(),
     });
   }
-
-  // Create project directory
-  const jobId = nanoid();
-  const jobDir = path.join(process.cwd(), "sandbox", jobId); // sandbox is the folder they will be stored temporirily
-  fs.mkdirSync(jobDir, { recursive: true }); // if dir exist fine if not then create it
-
-  for (const relativePath of Object.keys(files)) {
-    const fullPath = path.join(jobDir, relativePath);
-    const dir = path.dirname(fullPath);
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(fullPath, files[relativePath]);
-  } // creating whole folder structure and writing the files content
-
-  // Build compile command + run command
-  let compileCmd = "";
-  let runCmd = "";
-
-  switch (language) {
-    case "python":
-      runCmd = `python3 ${entryFile}`;
-      break;
-
-    case "js":
-      runCmd = `node ${entryFile}`;
-      break;
-
-    case "java": {
-        compileCmd = `javac -d . $(find . -name "*.java")`;
-
-        const entryContent = files[entryFile];
-        const pkg = extractJavaPackage(entryContent);
-
-        const simpleName = path.basename(entryFile, ".java");
-
-        const mainClassName = pkg ? `${pkg}.${simpleName}` : simpleName;
-
-        runCmd = `java -cp . ${mainClassName}`;
-        break;
-      }
-
-    case "c":
-      compileCmd = `gcc $(find . -name "*.c") -o main`;
-      runCmd = `./main`;
-      break;
-
-    case "cpp":
-      compileCmd = `g++ $(find . -name "*.cpp") -o main`;
-      runCmd = `./main`;
-      break;
-
-    default:
-      return res.status(400).json({ error: "Unsupported language" });
-  }
-
-  const mountPath = convertToDockerPath(jobDir);
-
-  // Build Docker command
-  const args = [
-    "run",
-    "--rm", // remove the docker when the process is finished
-    "-i", // make it interactive to take input also or to get access to cli
-    "-v", // mount this volume to the /sandbox in the docker container
-    `${mountPath}:/sandbox`,
-    "compile-sandbox", // name of the docker image
-    "bash", 
-    "-c",
-    `cd /sandbox && ${compileCmd ? compileCmd + " && " : ""}${runCmd}`,
-  ];
-
-  let stdout = "";
-  let stderr = "";
-
-  const child = spawn("docker", args); // start docker process 
-
-  // Pass runtime input (stdin)
-  if (input) child.stdin.write(input + "\n");
-  child.stdin.end();
-
-  child.stdout.on("data", (data) => (stdout += data.toString()));
-  child.stderr.on("data", (data) => (stderr += data.toString()));
-
-  child.on("close", () => {
-    fs.rm(jobDir, { recursive: true, force: true }, () => {});
-    res.json({ stdout, stderr });
-  });
 });
 
 export default router;
