@@ -12,14 +12,14 @@ class WorkerPool {
         this.workers = [];
         this.queue = [];
         this.busy = new Set();
+        this.rrIndex = 0; // round-robin pointer
         this.workerFile = path_1.default.join(__dirname, "worker.js");
         for (let i = 0; i < size; i++) {
             this.workers.push(this.createWorker());
         }
     }
     createWorker() {
-        const worker = new worker_threads_1.Worker(this.workerFile);
-        return worker;
+        return new worker_threads_1.Worker(this.workerFile);
     }
     runJob(job) {
         return new Promise((resolve) => {
@@ -28,19 +28,31 @@ class WorkerPool {
         });
     }
     dispatch() {
-        for (const worker of this.workers) {
-            if (this.busy.has(worker))
-                continue;
-            if (this.queue.length === 0)
-                continue;
-            const { job, resolve } = this.queue.shift();
-            this.busy.add(worker);
-            worker.once("message", (result) => {
-                this.busy.delete(worker);
-                resolve(result);
-                this.dispatch();
-            });
-            worker.postMessage(job);
+        while (this.queue.length > 0) {
+            // Try assigning job to a worker using RR
+            let attempts = 0;
+            let assigned = false;
+            while (attempts < this.workers.length && !assigned) {
+                const worker = this.workers[this.rrIndex];
+                // Move pointer for next assignment ahead
+                this.rrIndex = (this.rrIndex + 1) % this.workers.length;
+                attempts++;
+                if (this.busy.has(worker))
+                    continue;
+                // Free worker found → assign job
+                const { job, resolve } = this.queue.shift();
+                this.busy.add(worker);
+                worker.once("message", (result) => {
+                    this.busy.delete(worker);
+                    resolve(result);
+                    this.dispatch(); // continue dispatching after job finishes
+                });
+                worker.postMessage(job);
+                assigned = true;
+            }
+            // If no worker was free → stop
+            if (!assigned)
+                break;
         }
     }
 }

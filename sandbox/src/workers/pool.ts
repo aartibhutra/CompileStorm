@@ -19,6 +19,8 @@ export class WorkerPool {
   private busy: Set<Worker> = new Set();
   private workerFile: string;
 
+  private rrIndex = 0; // round-robin pointer
+
   constructor(private size: number) {
     this.workerFile = path.join(__dirname, "worker.js");
 
@@ -28,8 +30,7 @@ export class WorkerPool {
   }
 
   private createWorker(): Worker {
-    const worker = new Worker(this.workerFile);
-    return worker;
+    return new Worker(this.workerFile);
   }
 
   runJob(job: Job): Promise<any> {
@@ -40,21 +41,37 @@ export class WorkerPool {
   }
 
   private dispatch() {
-    for (const worker of this.workers) {
-      if (this.busy.has(worker)) continue;
-      if (this.queue.length === 0) continue;
+    while (this.queue.length > 0) {
+      // Try assigning job to a worker using RR
+      let attempts = 0;
+      let assigned = false;
 
-      const { job, resolve } = this.queue.shift()!;
+      while (attempts < this.workers.length && !assigned) {
+        const worker = this.workers[this.rrIndex];
 
-      this.busy.add(worker);
+        // Move pointer for next assignment ahead
+        this.rrIndex = (this.rrIndex + 1) % this.workers.length;
 
-      worker.once("message", (result) => {
-        this.busy.delete(worker);
-        resolve(result);
-        this.dispatch();
-      });
+        attempts++;
 
-      worker.postMessage(job);
+        if (this.busy.has(worker)) continue;
+
+        // Free worker found → assign job
+        const { job, resolve } = this.queue.shift()!;
+        this.busy.add(worker);
+
+        worker.once("message", (result) => {
+          this.busy.delete(worker);
+          resolve(result);
+          this.dispatch(); // continue dispatching after job finishes
+        });
+
+        worker.postMessage(job);
+        assigned = true;
+      }
+
+      // If no worker was free → stop
+      if (!assigned) break;
     }
   }
 }
