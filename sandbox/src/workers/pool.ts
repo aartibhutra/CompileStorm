@@ -44,7 +44,8 @@ export class WorkerPool {
       if (this.busy.has(worker)) continue;
       if (this.queue.length === 0) continue;
 
-      const { job, resolve } = this.queue.shift()!;
+      const idx = Math.floor(Math.random() * this.queue.length);
+      const { job, resolve } = this.queue.splice(idx, 1)[0];
 
       this.busy.add(worker);
 
