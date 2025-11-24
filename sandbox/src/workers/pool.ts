@@ -11,6 +11,7 @@ interface Job {
 interface QueueItem {
   job: Job;
   resolve: (value: any) => void;
+  size: number; // natural job size (bytes)
 }
 
 export class WorkerPool {
@@ -23,18 +24,28 @@ export class WorkerPool {
     this.workerFile = path.join(__dirname, "worker.js");
 
     for (let i = 0; i < size; i++) {
-      this.workers.push(this.createWorker());
+      this.workers.push(new Worker(this.workerFile));
     }
   }
 
-  private createWorker(): Worker {
-    const worker = new Worker(this.workerFile);
-    return worker;
+  private getJobSize(job: Job): number {
+    let size = 0;
+    for (const content of Object.values(job.files)) {
+      size += content.length;
+    }
+    return size;
   }
 
   runJob(job: Job): Promise<any> {
     return new Promise((resolve) => {
-      this.queue.push({ job, resolve });
+
+      const size = this.getJobSize(job);
+
+      this.queue.push({ job, resolve, size });
+
+      // SJF => smallest size first
+      this.queue.sort((a, b) => a.size - b.size);
+
       this.dispatch();
     });
   }

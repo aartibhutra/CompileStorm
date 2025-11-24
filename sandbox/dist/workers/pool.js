@@ -14,16 +14,22 @@ class WorkerPool {
         this.busy = new Set();
         this.workerFile = path_1.default.join(__dirname, "worker.js");
         for (let i = 0; i < size; i++) {
-            this.workers.push(this.createWorker());
+            this.workers.push(new worker_threads_1.Worker(this.workerFile));
         }
     }
-    createWorker() {
-        const worker = new worker_threads_1.Worker(this.workerFile);
-        return worker;
+    getJobSize(job) {
+        let size = 0;
+        for (const content of Object.values(job.files)) {
+            size += content.length;
+        }
+        return size;
     }
     runJob(job) {
         return new Promise((resolve) => {
-            this.queue.push({ job, resolve });
+            const size = this.getJobSize(job);
+            this.queue.push({ job, resolve, size });
+            // SJF => smallest size first
+            this.queue.sort((a, b) => a.size - b.size);
             this.dispatch();
         });
     }
